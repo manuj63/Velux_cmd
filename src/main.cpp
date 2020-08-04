@@ -28,10 +28,7 @@ typedef ESP8266WebServer WiFiWebServer;
 typedef WebServer WiFiWebServer;
 #endif
 #include <AutoConnect.h>
-
-#define RELAY_1 26
-#define RELAY_2 25
-#define COMMAND_1 13
+#include <config.h>
 
 bool commande_1_pressed = false;
 
