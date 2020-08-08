@@ -29,6 +29,7 @@ typedef WebServer WiFiWebServer;
 #endif
 #include <AutoConnect.h>
 #include <config.h>
+#include <cmd_relay.hpp>
 
 bool commande_1_pressed = false;
 
@@ -54,8 +55,6 @@ void setup()
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-
-  Serial.println("Hello world");
 
   // Responder of root page and apply page handled directly from WebServer class.
 
@@ -96,12 +95,14 @@ void loop()
   portal.handleClient();
 
   Serial.println("commande relay_1");
-  digitalWrite(RELAY_1, HIGH);
+  //digitalWrite(RELAY_1, HIGH);
   //digitalWrite(RELAY_2,LOW);
+  command_vollet(UP);
   sys_delay_ms(500);
   Serial.println("commande relay_2");
-  digitalWrite(RELAY_1, LOW);
+  //digitalWrite(RELAY_1, LOW);
   //digitalWrite(RELAY_2,HIGH);
+  command_vollet(DOWN);
   sys_delay_ms(500);
   
 }
