@@ -31,21 +31,6 @@ typedef WebServer WiFiWebServer;
 #include <config.h>
 #include <cmd_relay.hpp>
 
-bool commande_1_pressed = false;
-
-void IRAM_ATTR isr()
-{
-  commande_1_pressed = !commande_1_pressed;
-  if (commande_1_pressed)
-  {
-    digitalWrite(RELAY_2, HIGH);
-  }
-  else
-  {
-    digitalWrite(RELAY_2, LOW);
-  }
-}
-
 WiFiWebServer server;
 AutoConnect portal(server);
 AutoConnectConfig config;
@@ -79,30 +64,23 @@ __AC_LINK__
   portal.config(config);
   portal.begin();
 
-  // Relays
-  Serial.println("config relay_1");
-  pinMode(RELAY_1, OUTPUT);
-  Serial.println("config relay_2");
-  pinMode(RELAY_2, OUTPUT);
-
-  //Telecommande
-  pinMode(COMMAND_1, INPUT);
-  attachInterrupt(COMMAND_1, isr, FALLING);
+  setup_cmd_shutter();
 }
 
 void loop()
 {
   portal.handleClient();
-
+/*
   Serial.println("commande relay_1");
   //digitalWrite(RELAY_1, HIGH);
   //digitalWrite(RELAY_2,LOW);
-  command_vollet(UP);
+  //command_vollet(UP);
   sys_delay_ms(500);
   Serial.println("commande relay_2");
   //digitalWrite(RELAY_1, LOW);
   //digitalWrite(RELAY_2,HIGH);
-  command_vollet(DOWN);
-  sys_delay_ms(500);
+  //command_vollet(DOWN);
+  sys_delay_ms(500);*/
+  run();
   
 }

@@ -8,6 +8,17 @@ typedef enum CMD_SHUTTER
 	DOWN = 2
 }CMD_SHUTTER;
 
-void command_vollet(CMD_SHUTTER state);
+typedef enum state_shutter
+{
+	STATE_STOP = 0,
+	STATE_UP = 1,
+	STATE_DOWN = 2
+}state_shutter;
+
+void command_shutter(CMD_SHUTTER state);
+
+void setup_cmd_shutter(void);
+
+void run(void);
 
 #endif
