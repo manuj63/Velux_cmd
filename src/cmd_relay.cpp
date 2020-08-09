@@ -44,7 +44,7 @@ void IRAM_ATTR isr_cmd_down()
 }
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
-bool TimerOut = true;
+volatile bool TimerOut = false;
 
 void IRAM_ATTR onTimer() {
     portENTER_CRITICAL_ISR(&timerMux);
@@ -70,8 +70,8 @@ void setup_cmd_shutter(void)
     //Timer
     timer = timerBegin(0, 80, true);
     timerAttachInterrupt(timer, &onTimer, true);
-    timerAlarmWrite(timer, 10000000, false);
-    timerAlarmEnable(timer);
+    timerAlarmWrite(timer, 10000000, true);
+
 }
 
 
@@ -81,41 +81,61 @@ void run(void)
     switch (state)
     {
     case state_shutter::STATE_STOP:
-        Serial.println("STATE STOP");
         if (commande_up_pressed)
         {
+            Serial.println("STATE UP");
+            timerRestart(timer);
+            timerAlarmEnable(timer);
             command_shutter(UP);
             state = STATE_UP;
         }
         if (commande_down_pressed)
         {
+            Serial.println("STATE DOWN");
+            //timerAlarmWrite(timer, 10000000, false);
+            timerRestart(timer);
+            timerAlarmEnable(timer);
             command_shutter(DOWN);
             state = STATE_DOWN;
         }
         break;
     case state_shutter::STATE_UP:
-        Serial.println("STATE UP");
-        if (commande_up_pressed || commande_down_pressed)
+        if (commande_up_pressed || commande_down_pressed || TimerOut)
         {
+            Serial.println("STATE STOP");
+            timerStop(timer);
+            timerAlarmDisable(timer);
             command_shutter(STOP);
             state = STATE_STOP;
         }
         break;
     case state_shutter::STATE_DOWN:
-        Serial.println("STATE DOWN");
-        if (commande_up_pressed || commande_down_pressed)
+        if (commande_up_pressed || commande_down_pressed || TimerOut)
         {
+            Serial.println("STATE STOP");
+            timerStop(timer);
+            timerAlarmDisable(timer);
             command_shutter(STOP);
             state = STATE_STOP;
         }
         break;
     default:
+        Serial.println("STATE DEFAULT");
+        timerStop(timer);
+        timerAlarmDisable(timer);
         command_shutter(STOP);
         state = STATE_STOP;
         break;
     }
+    if (TimerOut)
+    {
+        Serial.println("timeout");
+    }
     commande_up_pressed = false;
     commande_down_pressed = false;
+    portENTER_CRITICAL(&timerMux);
+    TimerOut = false;
+    portEXIT_CRITICAL(&timerMux);
 }
 /*
 

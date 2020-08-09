@@ -70,17 +70,5 @@ __AC_LINK__
 void loop()
 {
   portal.handleClient();
-/*
-  Serial.println("commande relay_1");
-  //digitalWrite(RELAY_1, HIGH);
-  //digitalWrite(RELAY_2,LOW);
-  //command_vollet(UP);
-  sys_delay_ms(500);
-  Serial.println("commande relay_2");
-  //digitalWrite(RELAY_1, LOW);
-  //digitalWrite(RELAY_2,HIGH);
-  //command_vollet(DOWN);
-  sys_delay_ms(500);*/
   run();
-  
 }
