@@ -1,10 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define RELAY_1         26
-#define RELAY_2         25
-#define COMMAND_UP      13
-#define COMMAND_DOWN    12
+#define RELAY_1         4
+#define RELAY_2         13
+#define COMMAND_UP      16
+#define COMMAND_DOWN    17
 
 
 #endif

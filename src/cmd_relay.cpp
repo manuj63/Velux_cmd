@@ -70,7 +70,7 @@ void setup_cmd_shutter(void)
     //Timer
     timer = timerBegin(0, 80, true);
     timerAttachInterrupt(timer, &onTimer, true);
-    timerAlarmWrite(timer, 10000000, true);
+    timerAlarmWrite(timer, 30000000, true);
 
 }
 
