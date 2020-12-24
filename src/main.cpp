@@ -61,8 +61,17 @@ __AC_LINK__
   });
 
   config.ota = AC_OTA_BUILTIN;
+  config.autoReconnect = true;
+  Serial.println("config");
   portal.config(config);
-  portal.begin();
+  //portal.begin();
+    Serial.println("begin");
+
+
+  // Establish a connection with an autoReconnect option.
+  if (portal.begin()) {
+    Serial.println("WiFi connected: " + WiFi.localIP().toString());
+  }  
 
   setup_cmd_shutter();
 }
