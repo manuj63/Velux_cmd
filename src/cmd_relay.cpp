@@ -4,6 +4,7 @@
 
 hw_timer_t * timer = NULL;
 
+#ifndef REVERSE_CMD_RELAY
 void command_shutter(CMD_SHUTTER state)
 {
     switch (state)
@@ -28,11 +29,40 @@ void command_shutter(CMD_SHUTTER state)
         digitalWrite(RELAY_2, LOW);
     }
 }
+#endif
+
+#ifdef REVERSE_CMD_RELAY
+void command_shutter(CMD_SHUTTER state)
+{
+    switch (state)
+    {
+    case STOP:
+        Serial.println("cmd_stop");
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, HIGH);
+        break;
+    case UP:
+        Serial.println("cmd_up");
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, LOW);
+        break;
+    case DOWN:
+        Serial.println("cmd_down");
+        digitalWrite(RELAY_1, LOW);
+        digitalWrite(RELAY_2, HIGH);
+        break;
+    default:
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, HIGH);
+    }
+}
+#endif
 
 bool commande_up_pressed = false;
 
 void IRAM_ATTR isr_cmd_up()
 {
+    Serial.println("isr_cmd_up");
     commande_up_pressed = true;
 }
 
@@ -40,6 +70,7 @@ bool commande_down_pressed = false;
 
 void IRAM_ATTR isr_cmd_down()
 {
+    Serial.println("isr_cmd_down");
     commande_down_pressed = true;
 }
 
