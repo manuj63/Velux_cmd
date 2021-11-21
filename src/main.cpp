@@ -35,6 +35,14 @@ WiFiWebServer server;
 AutoConnect portal(server);
 AutoConnectConfig config;
 
+bool whileCP(void) {
+  bool  rc;
+  // Here, something to process while the captive portal is open.
+  // To escape from the captive portal loop, this exit function returns false.
+  // rc = true;, or rc = false;
+  return rc;
+}
+
 void setup()
 {
   delay(1000);
@@ -62,6 +70,10 @@ __AC_LINK__
 
   config.ota = AC_OTA_BUILTIN;
   config.autoReconnect = true;
+  //config.reconnectInterval = 6;   // Seek interval time is 180[s].
+  //config.retainPortal = true;   // Keep the captive portal open.
+  //config.beginTimeout = 15000; // Timeout sets to 15[s]
+  portal.whileCaptivePortal(whileCP);
   Serial.println("config");
   portal.config(config);
   //portal.begin();
@@ -71,13 +83,23 @@ __AC_LINK__
   // Establish a connection with an autoReconnect option.
   if (portal.begin()) {
     Serial.println("WiFi connected: " + WiFi.localIP().toString());
-  }  
-
+  } 
+  Serial.println("setup_cmd_shutter");
   setup_cmd_shutter();
 }
 
 void loop()
 {
+  if (WiFi.status() == WL_CONNECTED) {
+    // Here to do when WiFi is connected.
+    //Serial.println("run_conected");
+    run();
+  }
+  else {
+    // Here to do when WiFi is not connected.
+    //Serial.println("run_not_conected");
+    run();
+  }
+  
   portal.handleClient();
-  run();
 }
