@@ -66,6 +66,14 @@ void IRAM_ATTR isr_cmd_up()
     commande_up_pressed = true;
 }
 
+bool commande_stop_pressed = false;
+
+void IRAM_ATTR isr_cmd_stop()
+{
+    Serial.println("isr_cmd_stop");
+    commande_stop_pressed = true;
+}
+
 bool commande_down_pressed = false;
 
 void IRAM_ATTR isr_cmd_down()
@@ -95,6 +103,8 @@ void setup_cmd_shutter(void)
     //Telecommande
     pinMode(COMMAND_UP, INPUT);
     attachInterrupt(COMMAND_UP, isr_cmd_up, FALLING);
+    pinMode(COMMAND_STOP, INPUT);
+    attachInterrupt(COMMAND_STOP, isr_cmd_stop, FALLING);
     pinMode(COMMAND_DOWN, INPUT);
     attachInterrupt(COMMAND_DOWN, isr_cmd_down, FALLING);
 
@@ -131,7 +141,7 @@ void run(void)
         }
         break;
     case state_shutter::STATE_UP:
-        if (commande_up_pressed || commande_down_pressed || TimerOut)
+        if (commande_stop_pressed || TimerOut)
         {
             Serial.println("STATE STOP");
             timerStop(timer);
@@ -141,7 +151,7 @@ void run(void)
         }
         break;
     case state_shutter::STATE_DOWN:
-        if (commande_up_pressed || commande_down_pressed || TimerOut)
+        if (commande_stop_pressed || TimerOut)
         {
             Serial.println("STATE STOP");
             timerStop(timer);
@@ -163,6 +173,7 @@ void run(void)
         Serial.println("timeout");
     }
     commande_up_pressed = false;
+    commande_stop_pressed = false;
     commande_down_pressed = false;
     portENTER_CRITICAL(&timerMux);
     TimerOut = false;

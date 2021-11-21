@@ -5,8 +5,9 @@
 
 #define RELAY_1         4
 #define RELAY_2         13
-#define COMMAND_UP      16
-#define COMMAND_DOWN    17
+#define COMMAND_UP      17
+#define COMMAND_STOP    18
+#define COMMAND_DOWN    19
 
 
 #endif
