@@ -73,6 +73,8 @@ __AC_LINK__
   config.autoReconnect = true;
   config.apid = "ap_velux";
   config.psk = "pepsi2012";
+  config.hidden = 0;
+  config.hostName = "cde_velux";
   //config.reconnectInterval = 6;   // Seek interval time is 180[s].
   //config.retainPortal = true;   // Keep the captive portal open.
   //config.beginTimeout = 15000; // Timeout sets to 15[s]
