@@ -41,7 +41,7 @@ bool whileCP(void) {
   // To escape from the captive portal loop, this exit function returns false.
   // rc = true;, or rc = false;
   return rc;
-}
+} 
 
 void setup()
 {
@@ -64,12 +64,15 @@ __AC_LINK__
 </body>
 </html>
     )";
+    content += digitalRead(COMMAND_STOP) ? String("stop :1") : String("stop :0");
     content.replace("__AC_LINK__", String(AUTOCONNECT_LINK(COG_16)));
     server.send(200, "text/html", content);
   });
 
   config.ota = AC_OTA_BUILTIN;
   config.autoReconnect = true;
+  config.apid = "ap_velux";
+  config.psk = "pepsi2012";
   //config.reconnectInterval = 6;   // Seek interval time is 180[s].
   //config.retainPortal = true;   // Keep the captive portal open.
   //config.beginTimeout = 15000; // Timeout sets to 15[s]
