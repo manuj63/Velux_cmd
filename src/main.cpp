@@ -35,6 +35,8 @@ WiFiWebServer server;
 AutoConnect portal(server);
 AutoConnectConfig config;
 
+char buffer [50];
+
 bool whileCP(void) {
   bool  rc;
   // Here, something to process while the captive portal is open.
@@ -49,6 +51,12 @@ void setup()
   Serial.begin(115200);
   Serial.println();
 
+  //TEST 
+  pinMode(TEST_25_PINOUT, OUTPUT);
+  pinMode(TEST_32_PINOUT, OUTPUT);
+  digitalWrite(TEST_25_PINOUT, HIGH);
+  digitalWrite(TEST_32_PINOUT, LOW);
+
   // Responder of root page and apply page handled directly from WebServer class.
 
   server.on("/", []() {
@@ -61,9 +69,15 @@ void setup()
 <body>
 Place the root page with the sketch application.&ensp;
 __AC_LINK__
+<br>
+<br>
 </body>
 </html>
-    )";
+)";
+    int potValue = analogRead(IOUT);
+    Serial.println(potValue);
+    sprintf(buffer, "Analog = %d <br>", potValue);
+    content += String(buffer);
     content += digitalRead(COMMAND_STOP) ? String("stop :1") : String("stop :0");
     content.replace("__AC_LINK__", String(AUTOCONNECT_LINK(COG_16)));
     server.send(200, "text/html", content);
