@@ -28,37 +28,29 @@ typedef ESP8266WebServer WiFiWebServer;
 typedef WebServer WiFiWebServer;
 #endif
 #include <AutoConnect.h>
-
-#define RELAY_1 26
-#define RELAY_2 25
-#define COMMAND_1 13
-
-bool commande_1_pressed = false;
-
-void IRAM_ATTR isr()
-{
-  commande_1_pressed = !commande_1_pressed;
-  if (commande_1_pressed)
-  {
-    digitalWrite(RELAY_2, HIGH);
-  }
-  else
-  {
-    digitalWrite(RELAY_2, LOW);
-  }
-}
+#include <config.h>
+#include <cmd_relay.hpp>
+#include <html_tab.hpp>
 
 WiFiWebServer server;
 AutoConnect portal(server);
 AutoConnectConfig config;
+
+char buffer [50];
+
+bool whileCP(void) {
+  bool  rc;
+  // Here, something to process while the captive portal is open.
+  // To escape from the captive portal loop, this exit function returns false.
+  // rc = true;, or rc = false;
+  return rc;
+} 
 
 void setup()
 {
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-
-  Serial.println("Hello world");
 
   // Responder of root page and apply page handled directly from WebServer class.
 
@@ -72,39 +64,71 @@ void setup()
 <body>
 Place the root page with the sketch application.&ensp;
 __AC_LINK__
+<br>
+<br>
 </body>
 </html>
-    )";
+)";
+    int potValue = analogRead(IOUT);
+    Serial.println(potValue);
+    sprintf(buffer, "Analog = %d <br>", potValue);
+    content += String(buffer);
+    content += digitalRead(COMMAND_STOP) ? String("stop :1") : String("stop :0");
+    if(get_state() == STATE_STOP)
+    {
+      content += String("STATE_STOP");
+    }
+    if(get_state() == STATE_UP)
+    {
+      content += String("STATE_UP");
+    }
+    if(get_state() == STATE_DOWN)
+    {
+      content += String("STATE_DOWN");
+    }
+
+
     content.replace("__AC_LINK__", String(AUTOCONNECT_LINK(COG_16)));
     server.send(200, "text/html", content);
   });
 
   config.ota = AC_OTA_BUILTIN;
+  config.autoReconnect = true;
+  config.apid = "velux";
+  config.psk = "pepsi2012";
+  config.hidden = 0;
+  config.hostName = "cde_velux";
+  //config.reconnectInterval = 6;   // Seek interval time is 180[s].
+  //config.retainPortal = true;   // Keep the captive portal open.
+  //config.beginTimeout = 15000; // Timeout sets to 15[s]
+  portal.whileCaptivePortal(whileCP);
+  html_tab_init(server, portal);
+  Serial.println("config");
   portal.config(config);
-  portal.begin();
+  //portal.begin();
+    Serial.println("begin");
 
-  // Relays
-  Serial.println("config relay_1");
-  pinMode(RELAY_1, OUTPUT);
-  Serial.println("config relay_2");
-  pinMode(RELAY_2, OUTPUT);
 
-  //Telecommande
-  pinMode(COMMAND_1, INPUT);
-  attachInterrupt(COMMAND_1, isr, FALLING);
+  // Establish a connection with an autoReconnect option.
+  if (portal.begin()) {
+    Serial.println("WiFi connected: " + WiFi.localIP().toString());
+  } 
+  Serial.println("setup_cmd_shutter");
+  setup_cmd_shutter();
 }
 
 void loop()
 {
-  portal.handleClient();
-
-  Serial.println("commande relay_1");
-  digitalWrite(RELAY_1, HIGH);
-  //digitalWrite(RELAY_2,LOW);
-  sys_delay_ms(500);
-  Serial.println("commande relay_2");
-  digitalWrite(RELAY_1, LOW);
-  //digitalWrite(RELAY_2,HIGH);
-  sys_delay_ms(500);
+  if (WiFi.status() == WL_CONNECTED) {
+    // Here to do when WiFi is connected.
+    //Serial.println("run_conected");
+    run();
+  }
+  else {
+    // Here to do when WiFi is not connected.
+    //Serial.println("run_not_conected");
+    run();
+  }
   
+  portal.handleClient();
 }
