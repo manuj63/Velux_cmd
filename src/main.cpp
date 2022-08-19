@@ -30,6 +30,7 @@ typedef WebServer WiFiWebServer;
 #include <AutoConnect.h>
 #include <config.h>
 #include <cmd_relay.hpp>
+#include <html_tab.hpp>
 
 WiFiWebServer server;
 AutoConnect portal(server);
@@ -50,12 +51,6 @@ void setup()
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-
-  //TEST 
-  pinMode(TEST_25_PINOUT, OUTPUT);
-  pinMode(TEST_32_PINOUT, OUTPUT);
-  digitalWrite(TEST_25_PINOUT, HIGH);
-  digitalWrite(TEST_32_PINOUT, LOW);
 
   // Responder of root page and apply page handled directly from WebServer class.
 
@@ -79,13 +74,27 @@ __AC_LINK__
     sprintf(buffer, "Analog = %d <br>", potValue);
     content += String(buffer);
     content += digitalRead(COMMAND_STOP) ? String("stop :1") : String("stop :0");
+    if(get_state() == STATE_STOP)
+    {
+      content += String("STATE_STOP");
+    }
+    if(get_state() == STATE_UP)
+    {
+      content += String("STATE_UP");
+    }
+    if(get_state() == STATE_DOWN)
+    {
+      content += String("STATE_DOWN");
+    }
+
+
     content.replace("__AC_LINK__", String(AUTOCONNECT_LINK(COG_16)));
     server.send(200, "text/html", content);
   });
 
   config.ota = AC_OTA_BUILTIN;
   config.autoReconnect = true;
-  config.apid = "ap_velux";
+  config.apid = "velux";
   config.psk = "pepsi2012";
   config.hidden = 0;
   config.hostName = "cde_velux";
@@ -93,6 +102,7 @@ __AC_LINK__
   //config.retainPortal = true;   // Keep the captive portal open.
   //config.beginTimeout = 15000; // Timeout sets to 15[s]
   portal.whileCaptivePortal(whileCP);
+  html_tab_init(server, portal);
   Serial.println("config");
   portal.config(config);
   //portal.begin();

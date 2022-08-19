@@ -21,4 +21,10 @@ void setup_cmd_shutter(void);
 
 void run(void);
 
+void set_up(void);
+void set_down(void);
+void set_stop(void);
+
+state_shutter get_state(void);
+
 #endif

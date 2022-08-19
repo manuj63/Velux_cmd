@@ -115,10 +115,11 @@ void setup_cmd_shutter(void)
 
 }
 
+state_shutter state = STATE_STOP;
 
 void run(void)
 {
-    static state_shutter state = STATE_STOP;
+    //state_shutter state = STATE_STOP;
     switch (state)
     {
     case state_shutter::STATE_STOP:
@@ -179,19 +180,26 @@ void run(void)
     TimerOut = false;
     portEXIT_CRITICAL(&timerMux);
 }
-/*
 
-void loop() {
-
-
-    portENTER_CRITICAL(&timerMux);
-    interruptCounter--;
-    portEXIT_CRITICAL(&timerMux);
-
-
-    Serial.print("An interrupt as occurred. Total number: ");
-    Serial.println(totalInterruptCounter);
-
-  }
+void set_up(void)
+{
+    Serial.println("cmd_up");
+    commande_up_pressed = true;
 }
-*/
+
+void set_down (void)
+{
+    Serial.println("cmd_down");
+    commande_down_pressed = true;
+}
+
+void set_stop (void)
+{
+    Serial.println("cmd_stop");
+    commande_stop_pressed = true;
+}
+
+state_shutter get_state(void)
+{
+    return state;
+}
