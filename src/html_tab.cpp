@@ -14,7 +14,7 @@ fs::SPIFFSFS& FlashFS = SPIFFS;
 #define VOLET_DOWN     "/_volet_down"
 #define VOLET_UP       "/_volet_up"
 #define VOLET_STOP       "/_volet_stop"
-#define VERSION "1.0"
+#define VERSION "1.1debug"
 
 static const char PAGE_COMMAND[] PROGMEM = R"*(
 {

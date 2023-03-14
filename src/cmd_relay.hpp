@@ -5,7 +5,9 @@ typedef enum CMD_SHUTTER
 {
 	STOP = 0,
 	UP = 1,
-	DOWN = 2
+	DOWN = 2,
+	STOP_AND_DOWN = 3,
+	STOP_AND_UP = 4
 }CMD_SHUTTER;
 
 typedef enum state_shutter
