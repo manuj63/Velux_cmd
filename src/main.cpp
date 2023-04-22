@@ -98,9 +98,9 @@ __AC_LINK__
   config.psk = "pepsi2012";
   config.hidden = 0;
   config.hostName = "cde_velux";
-  //config.reconnectInterval = 6;   // Seek interval time is 180[s].
-  //config.retainPortal = true;   // Keep the captive portal open.
-  //config.beginTimeout = 15000; // Timeout sets to 15[s]
+  config.reconnectInterval = 6;   // Seek interval time is 180[s].
+  config.retainPortal = true;   // Keep the captive portal open.
+  config.beginTimeout = 15000; // Timeout sets to 15[s]
   portal.whileCaptivePortal(whileCP);
   html_tab_init(server, portal);
   Serial.println("config");

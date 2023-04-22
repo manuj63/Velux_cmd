@@ -51,6 +51,22 @@ void command_shutter(CMD_SHUTTER state)
         digitalWrite(RELAY_1, LOW);
         digitalWrite(RELAY_2, HIGH);
         break;
+    case STOP_AND_DOWN:
+        Serial.println("cmd_stop_and_down");
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, HIGH);
+        delayMicroseconds(500000);
+        digitalWrite(RELAY_1, LOW);
+        digitalWrite(RELAY_2, HIGH);
+    break;
+    case STOP_AND_UP:
+        Serial.println("cmd_stop_and_up");
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, HIGH);
+        delayMicroseconds(500000);
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, LOW);
+    break;
     default:
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, HIGH);
@@ -86,6 +102,7 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 volatile bool TimerOut = false;
 
 void IRAM_ATTR onTimer() {
+    Serial.println("isr_timer");
     portENTER_CRITICAL_ISR(&timerMux);
     TimerOut = true;
     portEXIT_CRITICAL_ISR(&timerMux);
@@ -149,6 +166,18 @@ void run(void)
             timerAlarmDisable(timer);
             command_shutter(STOP);
             state = STATE_STOP;
+        } else
+        {
+            if(commande_down_pressed)
+            {
+                Serial.println("STATE STOP AND DOWN");
+                timerStop(timer);
+                timerAlarmDisable(timer);
+                timerRestart(timer);
+                timerAlarmEnable(timer);
+                command_shutter(STOP_AND_DOWN);
+                state = STATE_DOWN;
+            }
         }
         break;
     case state_shutter::STATE_DOWN:
@@ -159,6 +188,18 @@ void run(void)
             timerAlarmDisable(timer);
             command_shutter(STOP);
             state = STATE_STOP;
+        } else
+        {
+            if(commande_up_pressed)
+            {
+                Serial.println("STATE STOP AND UP");
+                timerStop(timer);
+                timerAlarmDisable(timer);
+                timerRestart(timer);
+                timerAlarmEnable(timer);
+                command_shutter(STOP_AND_UP);
+                state = STATE_UP;
+            }
         }
         break;
     default:
