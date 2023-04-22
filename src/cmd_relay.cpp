@@ -55,7 +55,7 @@ void command_shutter(CMD_SHUTTER state)
         Serial.println("cmd_stop_and_down");
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, HIGH);
-        delayMicroseconds(500000);
+        delayMicroseconds(TIME_TO_CHANGE);
         digitalWrite(RELAY_1, LOW);
         digitalWrite(RELAY_2, HIGH);
     break;
@@ -63,7 +63,7 @@ void command_shutter(CMD_SHUTTER state)
         Serial.println("cmd_stop_and_up");
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, HIGH);
-        delayMicroseconds(500000);
+        delayMicroseconds(TIME_TO_CHANGE);
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, LOW);
     break;
@@ -134,7 +134,7 @@ void setup_cmd_shutter(void)
     //Timer
     timer = timerBegin(0, 80, true);
     timerAttachInterrupt(timer, &onTimer, true);
-    timerAlarmWrite(timer, 60000000, true);
+    timerAlarmWrite(timer, TIME_UP_DOWN, true);
 
     //initialisation du moteur
     set_init_motor();
@@ -166,7 +166,7 @@ void run(void)
         if (commande_init)
         {
             Serial.println("STATE INIT");
-            timerAlarmWrite(timer, 10000000, false);
+            timerAlarmWrite(timer, TIME_INIT, false);
             timerRestart(timer);
             timerAlarmEnable(timer);
             command_shutter(INIT);
@@ -224,7 +224,7 @@ void run(void)
             timerStop(timer);
             timerAlarmDisable(timer);
             command_shutter(STOP);
-            timerAlarmWrite(timer, 60000000, false);
+            timerAlarmWrite(timer, TIME_UP_DOWN, false);
             state = STATE_STOP;
         }
     break;

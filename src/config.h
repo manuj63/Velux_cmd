@@ -12,4 +12,8 @@
 #define TEST_32_PINOUT  32
 #define TEST_25_PINOUT  25 
 
+#define TIME_UP_DOWN    60000000 //  60s
+#define TIME_INIT      240000000 // 240s 
+#define TIME_TO_CHANGE    500000 // 500 ms
+
 #endif
