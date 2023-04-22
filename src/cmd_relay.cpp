@@ -67,6 +67,11 @@ void command_shutter(CMD_SHUTTER state)
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, LOW);
     break;
+    case INIT:
+        Serial.println("Initialisation du moteur");
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, LOW);
+    break;
     default:
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, HIGH);
@@ -74,6 +79,7 @@ void command_shutter(CMD_SHUTTER state)
 }
 #endif
 
+bool commande_init = false;
 bool commande_up_pressed = false;
 
 void IRAM_ATTR isr_cmd_up()
@@ -130,13 +136,14 @@ void setup_cmd_shutter(void)
     timerAttachInterrupt(timer, &onTimer, true);
     timerAlarmWrite(timer, 60000000, true);
 
+    //initialisation du moteur
+    set_init_motor();
 }
 
 state_shutter state = STATE_STOP;
 
 void run(void)
 {
-    //state_shutter state = STATE_STOP;
     switch (state)
     {
     case state_shutter::STATE_STOP:
@@ -151,11 +158,19 @@ void run(void)
         if (commande_down_pressed)
         {
             Serial.println("STATE DOWN");
-            //timerAlarmWrite(timer, 10000000, false);
             timerRestart(timer);
             timerAlarmEnable(timer);
             command_shutter(DOWN);
             state = STATE_DOWN;
+        }
+        if (commande_init)
+        {
+            Serial.println("STATE INIT");
+            timerAlarmWrite(timer, 10000000, false);
+            timerRestart(timer);
+            timerAlarmEnable(timer);
+            command_shutter(INIT);
+            state = STATE_INIT;
         }
         break;
     case state_shutter::STATE_UP:
@@ -202,6 +217,17 @@ void run(void)
             }
         }
         break;
+    case state_shutter::STATE_INIT:
+        if (commande_stop_pressed || TimerOut)
+        {
+            Serial.println("STATE STOP");
+            timerStop(timer);
+            timerAlarmDisable(timer);
+            command_shutter(STOP);
+            timerAlarmWrite(timer, 60000000, false);
+            state = STATE_STOP;
+        }
+    break;
     default:
         Serial.println("STATE DEFAULT");
         timerStop(timer);
@@ -217,6 +243,7 @@ void run(void)
     commande_up_pressed = false;
     commande_stop_pressed = false;
     commande_down_pressed = false;
+    commande_init = false;
     portENTER_CRITICAL(&timerMux);
     TimerOut = false;
     portEXIT_CRITICAL(&timerMux);
@@ -238,6 +265,12 @@ void set_stop (void)
 {
     Serial.println("cmd_stop");
     commande_stop_pressed = true;
+}
+
+void set_init_motor (void)
+{
+    Serial.println("cmd_init");
+    commande_init = true;
 }
 
 state_shutter get_state(void)
