@@ -14,6 +14,7 @@ fs::SPIFFSFS& FlashFS = SPIFFS;
 #define VOLET_DOWN     "/_volet_down"
 #define VOLET_UP       "/_volet_up"
 #define VOLET_STOP       "/_volet_stop"
+#define VOLET_INIT    "/_volet_init"
 #define VERSION "1.2 debug"
 
 static const char PAGE_COMMAND[] PROGMEM = R"*(
@@ -31,6 +32,11 @@ static const char PAGE_COMMAND[] PROGMEM = R"*(
       "name": "version",
       "type": "ACText",
       "format": "Version : %s<br />"
+    },
+    {
+      "name": "Pilotage",
+      "type": "ACText",
+      "format": "Commande de pilotage du volet : <br />"
     },
     {
       "name": "up",
@@ -68,6 +74,22 @@ static const char PAGE_COMMAND[] PROGMEM = R"*(
       "value": "<script>function _voletdown(t){const el=new FormData();el.append(t.name,t.value);fetch(')*" VOLET_DOWN R"*(',{mode:'no-cors',method:'post',body:el}).then(res=>{if(res.ok){return res.text();}}).then(text=>{console.log(text);const anc=document.getElementById(t.id);anc.value=text;anc.innerHTML=text;}).catch(err=>console.log(err));}</script>"
     },
     {
+      "name": "Configuration",
+      "type": "ACText",
+      "format": "Configuration : <br />"
+    },
+    {
+      "name": "initMotor",
+      "type": "ACButton",
+      "value": " Init Moteur ",
+      "action": "_voletinit(this)"
+    },
+    {
+      "name": "_voletinit",
+      "type": "ACElement",
+      "value": "<script>function _voletinit(t){const el=new FormData();el.append(t.name,t.value);fetch(')*" VOLET_INIT R"*(',{mode:'no-cors',method:'post',body:el}).then(res=>{if(res.ok){return res.text();}}).then(text=>{console.log(text);const anc=document.getElementById(t.id);anc.value=text;anc.innerHTML=text;}).catch(err=>console.log(err));}</script>"
+    },
+    {
       "name": "adjust_width",
       "type": "ACElement",
       "value": "<script type=\"text/javascript\">window.onload=function(){var t=document.querySelectorAll(\"input[type='text']\");for(i=0;i<t.length;i++){var e=t[i].getAttribute(\"placeholder\");e&&t[i].setAttribute(\"size\",e.length*.8)}};</script>"
@@ -91,6 +113,11 @@ void  VoletStop()
   set_stop();
 }
 
+void VoletInit()
+{
+  set_init_motor();
+}
+
 void html_tab_init(WebServer& server, AutoConnect& portal)
 {
   portal.load(PAGE_COMMAND);
@@ -107,4 +134,5 @@ void html_tab_init(WebServer& server, AutoConnect& portal)
   server.on (VOLET_UP, VoletUp);
   server.on(VOLET_DOWN, VoletDown);
   server.on(VOLET_STOP, VoletStop);
+  server.on(VOLET_INIT, VoletInit);
 }
