@@ -24,6 +24,27 @@ void command_shutter(CMD_SHUTTER state)
         digitalWrite(RELAY_1, HIGH);
         digitalWrite(RELAY_2, LOW);
         break;
+    case STOP_AND_DOWN:
+        Serial.println("cmd_stop_and_down");
+        digitalWrite(RELAY_1, LOW);
+        digitalWrite(RELAY_2, LOW);
+        delayMicroseconds(TIME_TO_CHANGE);
+        digitalWrite(RELAY_1, HIGH);
+        digitalWrite(RELAY_2, LOW);
+    break;
+    case STOP_AND_UP:
+        Serial.println("cmd_stop_and_up");
+        digitalWrite(RELAY_1, LOW);
+        digitalWrite(RELAY_2, LOW);
+        delayMicroseconds(TIME_TO_CHANGE);
+        digitalWrite(RELAY_1, LOW);
+        digitalWrite(RELAY_2, HIGH);
+    break;
+    case INIT:
+        Serial.println("Initialisation du moteur");
+        digitalWrite(RELAY_1, LOW);
+        digitalWrite(RELAY_2, HIGH);
+    break;
     default:
         digitalWrite(RELAY_1, LOW);
         digitalWrite(RELAY_2, LOW);

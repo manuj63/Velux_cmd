@@ -94,7 +94,7 @@ __AC_LINK__
 
   config.ota = AC_OTA_BUILTIN;
   config.autoReconnect = true;
-  config.apid = "velux";
+  config.apid = "velux_sdb";
   config.psk = "pepsi2012";
   config.hidden = 0;
   config.hostName = "cde_velux";
