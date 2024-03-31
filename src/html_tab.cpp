@@ -1,5 +1,6 @@
 #include <html_tab.hpp>
 #include <cmd_relay.hpp>
+#include <RX480E.hpp>
 
 #if defined(ARDUINO_ARCH_ESP32)
 #include <FS.h>
@@ -15,7 +16,9 @@ fs::SPIFFSFS& FlashFS = SPIFFS;
 #define VOLET_UP       "/_volet_up"
 #define VOLET_STOP       "/_volet_stop"
 #define VOLET_INIT    "/_volet_init"
-#define VERSION "1.2"
+#define RESET_TX      "/_resettx"
+#define PAIRING_TX    "/_pairingtx"
+#define VERSION "1.3"
 
 static const char PAGE_COMMAND[] PROGMEM = R"*(
 {
@@ -90,6 +93,28 @@ static const char PAGE_COMMAND[] PROGMEM = R"*(
       "value": "<script>function _voletinit(t){const el=new FormData();el.append(t.name,t.value);fetch(')*" VOLET_INIT R"*(',{mode:'no-cors',method:'post',body:el}).then(res=>{if(res.ok){return res.text();}}).then(text=>{console.log(text);const anc=document.getElementById(t.id);anc.value=text;anc.innerHTML=text;}).catch(err=>console.log(err));}</script>"
     },
     {
+      "name": "ResetTX",
+      "type": "ACButton",
+      "value": " ResetTX ",
+      "action": "_resettx(this)"
+    },
+    {
+      "name": "_resettx",
+      "type": "ACElement",
+      "value": "<script>function _resettx(t){const el=new FormData();el.append(t.name,t.value);fetch(')*" RESET_TX R"*(',{mode:'no-cors',method:'post',body:el}).then(res=>{if(res.ok){return res.text();}}).then(text=>{console.log(text);const anc=document.getElementById(t.id);anc.value=text;anc.innerHTML=text;}).catch(err=>console.log(err));}</script>"
+    },
+    {
+      "name": "PairingTX",
+      "type": "ACButton",
+      "value": " PairingTX ",
+      "action": "_pairingtx(this)"
+    },
+    {
+      "name": "_pairingtx",
+      "type": "ACElement",
+      "value": "<script>function _pairingtx(t){const el=new FormData();el.append(t.name,t.value);fetch(')*" PAIRING_TX R"*(',{mode:'no-cors',method:'post',body:el}).then(res=>{if(res.ok){return res.text();}}).then(text=>{console.log(text);const anc=document.getElementById(t.id);anc.value=text;anc.innerHTML=text;}).catch(err=>console.log(err));}</script>"
+    },
+    {
       "name": "adjust_width",
       "type": "ACElement",
       "value": "<script type=\"text/javascript\">window.onload=function(){var t=document.querySelectorAll(\"input[type='text']\");for(i=0;i<t.length;i++){var e=t[i].getAttribute(\"placeholder\");e&&t[i].setAttribute(\"size\",e.length*.8)}};</script>"
@@ -118,6 +143,17 @@ void VoletInit()
   set_init_motor();
 }
 
+void ResetTX()
+{
+  reset_RX480E();
+}
+
+void pairingTX()
+{
+  pairing_RX480E();
+}
+
+
 void html_tab_init(WebServer& server, AutoConnect& portal)
 {
   portal.load(PAGE_COMMAND);
@@ -135,4 +171,6 @@ void html_tab_init(WebServer& server, AutoConnect& portal)
   server.on(VOLET_DOWN, VoletDown);
   server.on(VOLET_STOP, VoletStop);
   server.on(VOLET_INIT, VoletInit);
+  server.on(RESET_TX,ResetTX);
+  server.on(PAIRING_TX, pairingTX);
 }

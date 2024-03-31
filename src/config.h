@@ -8,6 +8,7 @@
 #define COMMAND_DOWN    17
 #define COMMAND_STOP    18
 #define COMMAND_UP      19
+#define KEY             21
 #define IOUT            33
 #define TEST_32_PINOUT  32
 #define TEST_25_PINOUT  25 
