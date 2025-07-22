@@ -30,6 +30,7 @@ typedef WebServer WiFiWebServer;
 #include <AutoConnect.h>
 #include <config.h>
 #include <cmd_relay.hpp>
+#include <RX480E.hpp>
 #include <html_tab.hpp>
 
 WiFiWebServer server;
@@ -94,9 +95,9 @@ __AC_LINK__
 
   config.ota = AC_OTA_BUILTIN;
   config.autoReconnect = true;
-  config.apid = "velux";
-  config.psk = "pepsi2012";
-  config.hidden = 0;
+  config.apid = "velux_sdb";
+  config.psk = "2527Chastel";
+  config.hidden = true;
   config.hostName = "cde_velux";
   config.reconnectInterval = 6;   // Seek interval time is 180[s].
   config.retainPortal = true;   // Keep the captive portal open.
@@ -115,6 +116,8 @@ __AC_LINK__
   } 
   Serial.println("setup_cmd_shutter");
   setup_cmd_shutter();
+
+  setup_RX480E();
 }
 
 void loop()
